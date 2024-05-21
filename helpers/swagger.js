@@ -1,7 +1,7 @@
 const swaggerJSDoc = require("swagger-jsdoc");
 const apiOptions = {
   definition: {
-    openapi: "3.1.0",
+    openapi: "3.0.0",
     info: {
       title: "Finance Management API",
       version: "1.0.0",
@@ -12,4 +12,4 @@ const apiOptions = {
 };
 
 const swaggerSpec = swaggerJSDoc(apiOptions);
-module.exports = swaggerSpec
+module.exports = swaggerSpec;

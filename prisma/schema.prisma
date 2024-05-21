@@ -12,7 +12,7 @@ model User {
   email String  @unique 
   password String
   role Role @default(USER)
-  budget Decimal?
+  budget Decimal? @default(0)
   transaction Transaction[]
   goalExpense GoalExpense?
 

@@ -1,5 +1,5 @@
-import bcrypt from "bcrypt";
-import { PrismaClient } from "@prisma/client";
+const bcrypt = require("bcrypt");
+const { PrismaClient } = require("@prisma/client");
 
 var createError = require("http-errors");
 var express = require("express");
@@ -13,7 +13,7 @@ var swaggerSpec = require("./helpers/swagger");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 
-// middleware for hashing password in database
+//middleware for hashing password in database
 const prisma = new PrismaClient().$extends({
   query: {
     user: {
@@ -27,19 +27,6 @@ const prisma = new PrismaClient().$extends({
   },
 });
 
-prisma.$use((params, next) => {
-  if (
-    params.model === "User" &&
-    ["create", "update"].includes(params.action) &&
-    params.args.data["password"]
-  ) {
-    params.args.data["password"] = bcrypt.hashSync(
-      params.args.data["password"],
-      10
-    );
-  }
-  return next(params);
-});
 var app = express();
 
 // view engine setup
