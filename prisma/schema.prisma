@@ -1,0 +1,33 @@
+generator client {
+  provider        = "prisma-client-js"
+}
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique 
+  name  String
+  role Role
+  transaction Transaction[]
+}
+// the amount of cash to be consumed ideally from a given time to a particular time
+model GoalExpense{
+    id Int @id @default(autoincrement())
+    
+}
+model Transaction{
+    id Int @id @default(autoincrement())
+    amount Int
+    user User @relation(fields : [userId], references: [id])
+    userId Int
+    @@index(userId)
+}
+
+enum Role {
+  USER
+  ADMIN
+  VISITOR
+}
