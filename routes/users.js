@@ -1,5 +1,7 @@
 var express = require("express");
 var router = express.Router();
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 /**
  * @swagger
  * /users:
@@ -10,15 +12,15 @@ var router = express.Router();
  *       200:
  *         description: Successful response with a list of users.
  */
-router.get("/", function (req, res, next) {
-  res.send("It should work from here!");
+router.get("/:id", async (req, res) => {
+  //const
 });
 
-router.post("/create-user", (req, res) => {
-  const userDetails = req.body;
+router.post("/create-user", async (req, res) => {
+  const { name, email } = req.body;
 });
-router.delete("/delete-user/:id", (req, res) => {});
+router.delete("/delete-user/:id", async (req, res) => {});
 
-router.put("/update-user/:id", (req, res) => {});
+router.put("/update-user/:id", async (req, res) => {});
 
 module.exports = router;

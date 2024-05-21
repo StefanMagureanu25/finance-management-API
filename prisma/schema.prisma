@@ -5,29 +5,55 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+    
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique 
+  id    String  @id @default(uuid())
   name  String
-  role Role
+  email String  @unique 
+  password String
+  role Role @default(USER)
+  budget Decimal?
   transaction Transaction[]
+  goalExpense GoalExpense?
+
+  @@index([email])
 }
 // the amount of cash to be consumed ideally from a given time to a particular time
 model GoalExpense{
-    id Int @id @default(autoincrement())
-    
+    id    String     @id @default(uuid())
+    desiredAmount String
+    startDate DateTime @default(now())
+    endDate DateTime // startDate + 30 days (I'll add this when creating a new goalExpense)
+    isCompleted Boolean // checks after an update on expenses if totalAmountSpent > desiredAmount
+    user User @relation(fields: [userId], references: [id])
+    userId String @unique
 }
 model Transaction{
-    id Int @id @default(autoincrement())
-    amount Int
+    id    String     @id @default(uuid())
+    amount Decimal
     user User @relation(fields : [userId], references: [id])
-    userId Int
+    items Item[]
+    userId String
     @@index(userId)
+}
+model Item{
+    id Int @id @default(autoincrement())
+    name String
+    price Decimal
+    isUnwanted Boolean 
+    categoryName String
+    transaction Transaction @relation(fields : [transactionId], references: [id])
+    transactionId String
+}
+// ex: food, travel etc
+model Category{
+    id   String   @id @default(uuid())
+    name String @unique
+    totalAmountSpent Decimal // money spent on this category among all the transactions
+    cap Decimal?
 }
 
 enum Role {
   USER
   ADMIN
-  VISITOR
 }
