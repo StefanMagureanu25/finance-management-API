@@ -1,7 +1,0 @@
-2. Register a transaction made by user (at the same time, I'll have to extract the amount spent from the budget and add the amount
-to the category type for that transaction).
-
-Model transactions:
-1. One-To-Many: User -> Transaction
-2. One-To-One: User -> GoalExpense
-3. One-to-Many: Transaction -> Item

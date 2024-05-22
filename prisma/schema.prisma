@@ -38,7 +38,7 @@ model Transaction{
 }
 
 model Item{
-    id Int @id @default(autoincrement())
+    id String @id @default(uuid())
     name String
     price Decimal
     categoryName String

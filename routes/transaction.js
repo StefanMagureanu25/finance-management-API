@@ -157,4 +157,42 @@ router.get("/", async (req, res) => {
     }
   }
 });
+/**
+ * @swagger
+ * /delete-transactions:
+ *   delete:
+ *     summary: Delete all transactions
+ *     description: Deletes all transactions from the database.
+ *     responses:
+ *       200:
+ *         description: Transactions deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   description: A message indicating the success of the operation.
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: An error message indicating the failure of the operation.
+ */
+
+router.delete("/delete-transactions", async (req, res) => {
+  try {
+    await prisma.transaction.deleteMany();
+    res.json({ message: "Transactions deleted successfully!" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 module.exports = router;

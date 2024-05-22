@@ -14,6 +14,7 @@ var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var goalExpensesRouter = require("./routes/goalExpense");
 var transactionRouter = require("./routes/transaction");
+var itemRouter = require("./routes/items");
 
 var app = express();
 
@@ -28,6 +29,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/goal-expenses", goalExpensesRouter);
 app.use("/transaction", transactionRouter);
+app.use("/items", itemRouter);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 // catch 404 and forward to error handler
