@@ -1,6 +1,3 @@
-const bcrypt = require("bcrypt");
-const { PrismaClient } = require("@prisma/client");
-
 var createError = require("http-errors");
 var express = require("express");
 var path = require("path");
@@ -12,20 +9,7 @@ var swaggerSpec = require("./helpers/swagger");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
-
-//middleware for hashing password in database
-const prisma = new PrismaClient().$extends({
-  query: {
-    user: {
-      $allOperations({ operation, args, query }) {
-        if (["create", "update"].includes(operation) && args.data["password"]) {
-          args.data["password"] = bcrypt.hashSync(args.data["password"], 10);
-        }
-        return query(args);
-      },
-    },
-  },
-});
+var goalExpensesRouter = require("./routes/goalExpense");
 
 var app = express();
 
@@ -42,6 +26,7 @@ app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec));
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
+app.use("/goal-expenses", goalExpensesRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

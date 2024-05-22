@@ -1,4 +1,4 @@
-1. Add a budget to spend for a particular user (ex: salary).
+1. Add a budget to spend for a particular user (ex: salary). done
 2. Register a transaction made by user (at the same time, I'll have to extract the amount spent from the budget and add the amount
 to the category type for that transaction).
 3. Total amount spent on a transaction (sum of each element from Items)
