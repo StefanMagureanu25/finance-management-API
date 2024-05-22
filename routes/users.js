@@ -1,29 +1,27 @@
-const { PrismaClient } = require("@prisma/client");
-const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const { PrismaClient } = require("@prisma/client");
 
-//middleware for hashing password in database
+//middlewares
+const { verifyToken, isAdmin } = require("../middlewares/auth");
+const { validationRules, validate } = require("../middlewares/signUpCheck");
+const hashPasswordMiddleware = require("../middlewares/prisma");
+
+const express = require("express");
+const router = express.Router();
+
 const prisma = new PrismaClient().$extends({
   query: {
     user: {
-      create({ args, query }) {
-        if (args.data.password) {
-          args.data.password = bcrypt.hashSync(args.data.password, 10);
-        }
-        return query(args);
+      create(args) {
+        return hashPasswordMiddleware(args);
       },
-      update({ args, query }) {
-        if (args.data.password) {
-          args.data.password = bcrypt.hashSync(args.data.password, 10);
-        }
-        return query(args);
+      update(args) {
+        return hashPasswordMiddleware(args);
       },
     },
   },
 });
-
-let express = require("express");
-let router = express.Router();
 
 /**
  * @swagger
@@ -46,7 +44,7 @@ let router = express.Router();
  *       500:
  *         description: Internal server error.
  */
-router.get("/", async (req, res) => {
+router.get("/", verifyToken, isAdmin, async (req, res) => {
   try {
     const { email } = req.query;
     const user = await prisma.user.findUnique({
@@ -77,7 +75,7 @@ router.get("/", async (req, res) => {
  *       500:
  *         description: Internal server error.
  */
-router.get("/all-users", async (req, res) => {
+router.get("/all-users", verifyToken, isAdmin, async (req, res) => {
   try {
     const users = await prisma.user.findMany();
     res.json(users);
@@ -111,7 +109,7 @@ router.get("/all-users", async (req, res) => {
  *       500:
  *         description: Internal server error.
  */
-router.post("/signup", async (req, res) => {
+router.post("/signup", validationRules, validate, async (req, res) => {
   try {
     const { email, name, password } = req.body;
     const result = await prisma.user.create({
@@ -166,7 +164,6 @@ router.post("/signup", async (req, res) => {
  *       500:
  *         description: Internal server error.
  */
-
 router.post("/signin", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -185,7 +182,7 @@ router.post("/signin", async (req, res) => {
         .json({ error: "Incorrect password. Please try again!" });
     }
     const token = jwt.sign(
-      { userId: user.id, email: user.email },
+      { userId: user.id, email: user.email, role: user.role },
       "secret_key_generated",
       { expiresIn: "2h" }
     );
@@ -216,7 +213,7 @@ router.post("/signin", async (req, res) => {
  *       500:
  *         description: Internal server error.
  */
-router.delete("/delete-user", async (req, res) => {
+router.delete("/delete-user", verifyToken, isAdmin, async (req, res) => {
   try {
     const { id } = req.query;
 
