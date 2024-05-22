@@ -3,7 +3,9 @@ const prisma = new PrismaClient();
 
 const express = require("express");
 const router = express.Router();
+const moment = require("moment");
 
+const { verifyToken, isAdmin } = require("../middlewares/auth");
 /**
  * @swagger
  * /goal-expenses/add:
@@ -34,14 +36,16 @@ const router = express.Router();
 router.post("/add", async (req, res) => {
   try {
     const { id, desiredAmount } = req.body;
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + 30);
+    console.log(`id: ${id}, desiredAmount: ${desiredAmount}`);
+    const startDate = moment().format("YYYY-MM-DD").toString();
+    const endDate = moment().add(30, "days").format("YYYY-MM-DD").toString();
+
+    console.log(`startDate: ${startDate}, endDate: ${endDate}`);
 
     // Check if user exists
     const user = await prisma.user.findUnique({
       where: { id: id },
     });
-
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -50,13 +54,14 @@ router.post("/add", async (req, res) => {
     const newGoalExpense = await prisma.goalExpense.create({
       data: {
         userId: id,
-        desiredAmount: parseFloat(desiredAmount),
-        endDate,
+        desiredAmount: desiredAmount,
+        startDate: startDate,
+        endDate: endDate,
       },
     });
-
     res.json(newGoalExpense);
   } catch (error) {
+    console.log("Error creating new goal expense");
     res.status(500).json({ error: "Internal server error" });
   }
 });
@@ -73,7 +78,7 @@ router.post("/add", async (req, res) => {
  *       500:
  *         description: Internal server error.
  */
-router.get("/", async (req, res) => {
+router.get("/", verifyToken, isAdmin, async (req, res) => {
   try {
     const goalExpenses = await prisma.goalExpense.findMany();
     return res.json(goalExpenses);
@@ -82,4 +87,95 @@ router.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /goal-expenses/delete:
+ *   delete:
+ *     summary: Delete a goal expense
+ *     description: Delete a goal expense from the database by its ID.
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the goal expense to delete
+ *     responses:
+ *       200:
+ *         description: Goal expense deleted successfully.
+ *       404:
+ *         description: Goal expense not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.delete("/delete", async (req, res) => {
+  try {
+    const { id } = req.query;
+
+    const deletedGoalExpense = await prisma.goalExpense.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    res.json({ message: "Goal Expense deleted successfully" });
+  } catch (error) {
+    if (error.code === "P2025") {
+      res.status(404).json({ error: "Goal expense not found" });
+    } else {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+});
+
+/**
+ * @swagger
+ * /goal-expenses/update:
+ *   put:
+ *     summary: Update a goal expense
+ *     description: Update the desired amount of a goal expense.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *                 description: The ID of the goal expense to update
+ *               desiredAmount:
+ *                 type: number
+ *                 description: The new desired amount for the goal expense
+ *     responses:
+ *       200:
+ *         description: Goal expense updated successfully.
+ *       404:
+ *         description: Goal expense not found.
+ *       500:
+ *         description: Internal server error.
+ */
+router.put("/update", async (req, res) => {
+  try {
+    const { id, desiredAmount } = req.body;
+    console.log(`id: ${id}, desiredAmount: ${desiredAmount}`);
+    console.log("Inainte de update");
+    const goalExpenseUpdated = await prisma.goalExpense.update({
+      where: {
+        id: id,
+      },
+      data: { desiredAmount: desiredAmount },
+    });
+    console.log("Face update-ul");
+    res.json(goalExpenseUpdated);
+  } catch (error) {
+    if (error.code === "P2025") {
+      console.log("nu gaseste itemul");
+      res.status(404).json({ error: "Goal Expense not found" });
+    } else {
+      console.log("E o problema mare aici!");
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+});
 module.exports = router;

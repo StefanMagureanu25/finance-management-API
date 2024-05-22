@@ -7,6 +7,7 @@ var logger = require("morgan");
 var swaggerUI = require("swagger-ui-express");
 var swaggerSpec = require("./helpers/swagger");
 
+// routers
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var goalExpensesRouter = require("./routes/goalExpense");

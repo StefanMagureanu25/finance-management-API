@@ -22,8 +22,8 @@ model User {
 model GoalExpense{
     id    String     @id @default(uuid())
     desiredAmount Decimal
-    startDate DateTime @default(now())
-    endDate DateTime // startDate + 30 days (I'll add this when creating a new goalExpense)
+    startDate String
+    endDate String // startDate + 30 days (I'll add this when creating a new goalExpense)
     isCompleted Boolean @default(false) // checks after an update on expenses if totalAmountSpent > desiredAmount
     user User @relation(fields: [userId], references: [id])
     userId String @unique
