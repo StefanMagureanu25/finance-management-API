@@ -4,8 +4,9 @@ const { PrismaClient } = require("@prisma/client");
 
 //middlewares
 const { verifyToken, isAdmin } = require("../middlewares/auth");
-const { validationRules, validate } = require("../middlewares/signUpCheck");
+const {validationRules, validate} = require("../middlewares/signUpCheck");
 const hashPasswordMiddleware = require("../middlewares/prisma");
+
 
 const express = require("express");
 const router = express.Router();

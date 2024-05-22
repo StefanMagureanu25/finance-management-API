@@ -36,21 +36,14 @@ const { verifyToken, isAdmin } = require("../middlewares/auth");
 router.post("/add", async (req, res) => {
   try {
     const { id, desiredAmount } = req.body;
-    console.log(`id: ${id}, desiredAmount: ${desiredAmount}`);
     const startDate = moment().format("YYYY-MM-DD").toString();
     const endDate = moment().add(30, "days").format("YYYY-MM-DD").toString();
-
-    console.log(`startDate: ${startDate}, endDate: ${endDate}`);
-
-    // Check if user exists
     const user = await prisma.user.findUnique({
       where: { id: id },
     });
     if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
-
-    // Create the goal expense
     const newGoalExpense = await prisma.goalExpense.create({
       data: {
         userId: id,
@@ -158,22 +151,17 @@ router.delete("/delete", async (req, res) => {
 router.put("/update", async (req, res) => {
   try {
     const { id, desiredAmount } = req.body;
-    console.log(`id: ${id}, desiredAmount: ${desiredAmount}`);
-    console.log("Inainte de update");
     const goalExpenseUpdated = await prisma.goalExpense.update({
       where: {
         id: id,
       },
       data: { desiredAmount: desiredAmount },
     });
-    console.log("Face update-ul");
     res.json(goalExpenseUpdated);
   } catch (error) {
     if (error.code === "P2025") {
-      console.log("nu gaseste itemul");
       res.status(404).json({ error: "Goal Expense not found" });
     } else {
-      console.log("E o problema mare aici!");
       res.status(500).json({ error: "Internal server error" });
     }
   }
