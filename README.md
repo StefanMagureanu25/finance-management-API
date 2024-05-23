@@ -23,12 +23,12 @@ This project is a finance management API built with Express.js and Prisma ORM, d
 
 ```bash
 git clone https://github.com/StefanMagureanu25/finance-management-API
-
+```
 2. **Install dependencies**
 
 ```bash
 npm install
-
+```
 3. **Set up the database**
 Ensure you have PostgreSQL installed and running. Create a database for the project.
 
@@ -43,7 +43,7 @@ The .env file is used to store environment-specific configurations. It helps to 
 
 ```bash
 npx prisma migrate dev --name your_migration_name
-
+```
 5. **Run the application**
 
 ```bash
