@@ -8,7 +8,7 @@ describe("GET /items", () => {
     await prisma.item.createMany({
       data: [
         { name: "Coca-Cola", price: 10, categoryName: "Suc" },
-        { name: "Pizz", price: 35, categoryName: "Mancare" },
+        { name: "Pizza", price: 35, categoryName: "Mancare" },
       ],
     });
   });
@@ -64,7 +64,6 @@ describe("DELETE /items/delete-items", () => {
 
 describe("GET /goal-expenses", () => {
   beforeAll(async () => {
-    // Create some test goal expenses in the database
     await prisma.goalExpense.createMany({
       data: [
         { userId: "test-user-id", desiredAmount: 500 },
@@ -74,7 +73,6 @@ describe("GET /goal-expenses", () => {
   });
 
   afterAll(async () => {
-    // Clean up test data from the database
     await prisma.goalExpense.deleteMany();
   });
 
